@@ -1228,3 +1228,299 @@ function showTrainingStatus(event) {
     `;
     navigateToForm('content-area', 'profile-update-form', formContent, showWelcomeMessage);
 }
+
+
+
+// Show Attendance Records Section
+function showAttendanceRecords() {
+    console.log("showAttendanceRecords called");
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+        contentArea.querySelectorAll('div[id]').forEach(div => {
+            div.style.display = 'none';
+        });
+        const attendanceSection = document.getElementById('attendance-records');
+        if (attendanceSection) {
+            attendanceSection.style.display = 'block';
+            console.log("Attendance records section displayed");
+            // Fetch and update the attendance table when the section is shown
+            const employeeId = document.getElementById("employee_id").value || '';
+            const startDate = document.getElementById("start_date").value || '';
+            const endDate = document.getElementById("end_date").value || '';
+            updateAttendanceTable(employeeId, startDate, endDate);
+        } else {
+            console.error("attendance-records section not found");
+        }
+        const welcomeHeading = contentArea.querySelector('h2');
+        const welcomeMessage = contentArea.querySelector('p');
+        if (welcomeHeading) welcomeHeading.style.display = 'none';
+        if (welcomeMessage) welcomeMessage.style.display = 'none';
+    } else {
+        console.error("content-area not found");
+    }
+}
+
+
+// Show Leave Requests Section
+function showLeaveRequests() {
+    console.log("showLeaveRequests called");
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+        contentArea.querySelectorAll('div[id]').forEach(div => {
+            div.style.display = 'none';
+        });
+        const leaveSection = document.getElementById('leave-requests');
+        if (leaveSection) {
+            leaveSection.style.display = 'block';
+            console.log("Leave requests section displayed");
+            updateLeaveTable(); // Fetch and update leave table
+        } else {
+            console.error("leave-requests section not found");
+        }
+        const welcomeHeading = contentArea.querySelector('h2');
+        const welcomeMessage = contentArea.querySelector('p');
+        if (welcomeHeading) welcomeHeading.style.display = 'none';
+        if (welcomeMessage) welcomeMessage.style.display = 'none';
+    } else {
+        console.error("content-area not found");
+    }
+}
+
+
+// Update Leave Table via AJAX
+function updateLeaveTable() {
+    const leaveFilter = document.getElementById('leaveFilter').value;
+    const leaveTable = document.getElementById('leaveTable');
+    if (leaveTable) {
+        leaveTable.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+    }
+
+
+    fetch('hr_dashboard.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=fetch_leave_applications&leave_filter=${encodeURIComponent(leaveFilter)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Leave data received:', data);
+            if (leaveTable && data.success) {
+                leaveTable.innerHTML = `
+                   <tr>
+                       <th>Request ID</th>
+                       <th>Employee Name</th>
+                       <th>Start Date</th>
+                       <th>End Date</th>
+                       <th>Status</th>
+                       <th>Action</th>
+                   </tr>
+                   ${data.leave_applications.length > 0 ? data.leave_applications.map(app => `
+                       <tr>
+                           <td>${app.request_id}</td>
+                           <td>${app.employee_name}</td>
+                           <td>${app.leave_start_date}</td>
+                           <td>${app.leave_end_date || 'N/A'}</td>
+                           <td>${app.status}</td>
+                           <td>
+                               ${app.status === 'ispending' ? `
+                                   <form class="action-form" onsubmit="updateLeaveStatus(event, ${app.request_id})">
+                                       <input type="hidden" name="request_id" value="${app.request_id}">
+                                       <select name="status">
+                                           <option value="approved">Approve</option>
+                                           <option value="rejected">Reject</option>
+                                       </select>
+                                       <input type="submit" value="Update">
+                                   </form>
+                               ` : app.status === 'approved' || app.status === 'rejected' ? `
+                                   <button class="reconsider-btn" onclick="reconsiderLeave(${app.request_id})">Reconsider</button>
+                               ` : ''}
+                           </td>
+                       </tr>
+                   `).join('') : '<tr><td colspan="6">No leave applications found for the selected status.</td></tr>'}
+               `;
+            } else {
+                console.error('Error updating leave table:', data.error);
+                if (leaveTable) {
+                    leaveTable.innerHTML = '<tr><td colspan="6">Error fetching data: ' + (data.error || 'Unknown error') + '</td></tr>';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            if (leaveTable) {
+                leaveTable.innerHTML = '<tr><td colspan="6">Network error: Unable to fetch data</td></tr>';
+            }
+        });
+}
+
+
+// Update Attendance Table via AJAX
+function updateAttendanceTable(employeeId, startDate, endDate) {
+    const attendanceTable = document.getElementById('attendanceTable');
+    if (attendanceTable) {
+        attendanceTable.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+    }
+
+
+    fetch('hr_dashboard.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=fetch_attendance&employee_id=${encodeURIComponent(employeeId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Attendance data received:', data);
+            if (attendanceTable && data.success) {
+                attendanceTable.innerHTML = `
+                   <tr>
+                       <th>Employee ID</th>
+                       <th>Name</th>
+                       <th>Department</th>
+                       <th>Check In</th>
+                       <th>Check Out</th>
+                       <th>Status</th>
+                   </tr>
+                   ${data.attendance_records.length > 0 ? data.attendance_records.map(record => `
+                       <tr>
+                           <td>${record.employee_id}</td>
+                           <td>${record.employee_name}</td>
+                           <td>${record.department_name}</td>
+                           <td>${record.check_in || 'N/A'}</td>
+                           <td>${record.check_out || 'N/A'}</td>
+                           <td>${record.status}</td>
+                       </tr>
+                   `).join('') : '<tr><td colspan="6">No attendance records found.</td></tr>'}
+               `;
+            } else {
+                console.error('Error updating attendance table:', data.error);
+                if (attendanceTable) {
+                    attendanceTable.innerHTML = '<tr><td colspan="6">Error fetching data: ' + (data.error || 'Unknown error') + '</td></tr>';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            if (attendanceTable) {
+                attendanceTable.innerHTML = '<tr><td colspan="6">Network error: Unable to fetch data</td></tr>';
+            }
+        });
+}
+
+
+// Reconsider Leave Application via AJAX
+function reconsiderLeave(requestId) {
+    if (confirm('Are you sure you want to move this application back to pending?')) {
+        fetch('hr_dashboard.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=reconsider_leave&request_id=${encodeURIComponent(requestId)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    updateLeaveTable();
+                } else {
+                    alert('Error reconsidering leave application: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Network error: Unable to reconsider leave application.');
+            });
+    }
+}
+
+
+// Update Leave Status via AJAX
+function updateLeaveStatus(event, requestId) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    formData.append('action', 'update_leave_status');
+    formData.append('request_id', requestId);
+
+
+    fetch('hr_dashboard.php', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                updateLeaveTable();
+            } else {
+                alert('Error updating leave status: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Network error: Unable to update leave status.');
+        });
+}
+
+
+// DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", function () {
+    const searchForm = document.getElementById("attendanceForm");
+    if (searchForm) {
+        searchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const employeeId = document.getElementById("employee_id").value;
+            const startDate = document.getElementById("start_date").value;
+            const endDate = document.getElementById("end_date").value;
+            updateAttendanceTable(employeeId, startDate, endDate);
+        });
+    } else {
+        console.warn("attendanceForm not found on page load");
+    }
+
+
+    const leaveFilter = document.getElementById('leaveFilter');
+    if (leaveFilter) {
+        leaveFilter.addEventListener('change', function(event) {
+            event.preventDefault();
+            updateLeaveTable();
+        });
+    }
+
+
+    // Link sidebar options to functions
+    document.querySelector('a[href="#"] ~ ul#attendance-dropdown a:nth-child(1)').onclick = showAttendanceRecords;
+    document.querySelector('a[href="#"] ~ ul#attendance-dropdown a:nth-child(2)').onclick = showLeaveRequests;
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const leaveFilterParam = urlParams.get('leave_filter');
+    if (leaveFilterParam) {
+        const contentArea = document.getElementById('content-area');
+        if (contentArea) {
+            contentArea.querySelectorAll('div[id]').forEach(div => {
+                div.style.display = 'none';
+            });
+            const leaveSection = document.getElementById('leave-requests');
+            if (leaveSection) {
+                leaveSection.style.display = 'block';
+                const welcomeHeading = contentArea.querySelector('h2');
+                const welcomeMessage = contentArea.querySelector('p');
+                if (welcomeHeading) welcomeHeading.style.display = 'none';
+                if (welcomeMessage) welcomeMessage.style.display = 'none';
+                leaveFilter.value = leaveFilterParam;
+                updateLeaveTable();
+            }
+        }
+    } else {
+        const contentArea = document.getElementById('content-area');
+        if (contentArea) {
+            const welcomeHeading = contentArea.querySelector('h2');
+            const welcomeMessage = contentArea.querySelector('p');
+            if (welcomeHeading) welcomeHeading.style.display = 'block';
+            if (welcomeMessage) welcomeMessage.style.display = 'block';
+            document.getElementById('profile-update-form').style.display = 'none';
+            document.getElementById('attendance-records').style.display = 'none';
+            document.getElementById('leave-requests').style.display = 'none';
+        }
+    }
+});
+

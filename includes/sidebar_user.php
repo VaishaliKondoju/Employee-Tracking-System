@@ -8,10 +8,10 @@
         </li>
         <li><a href="#" onclick="toggleDropdown(event, 'attendance-dropdown')"><i class="fas fa-clock"></i> Attendance & Leaves</a>
             <ul id="attendance-dropdown" class="dropdown">
-                <li><a href="#">Mark daily attendance</a></li>
-                <li><a href="#">View attendance history</a></li>
-                <li><a href="#">Apply for leave</a></li>
-                <li><a href="#">Track leave requests</a></li>
+                <li><a href="#" onclick="showMarkAttendanceForm()">Mark daily attendance</a></li>
+                <li><a href="#" onclick="showAttendanceHistory()">View attendance history</a></li>
+                <li><a href="#" onclick="showApplyLeaveForm()">Apply for leave</a></li>
+                <li><a href="#" onclick="showTrackLeaveRequests()">Track leave requests</a></li>
             </ul>
         </li>
         <li><a href="#" onclick="toggleDropdown(event, 'payroll-dropdown')"><i class="fas fa-money-bill"></i> Payroll and Salary</a>
@@ -47,8 +47,8 @@
         </li>
         <li><a href="#" onclick="toggleDropdown(event, 'help-dropdown')"><i class="fas fa-question-circle"></i> Help & Support</a>
             <ul id="help-dropdown" class="dropdown">
-                <li><a href="#">FAQs</a></li>
-                <li><a href="#">HR contact</a></li>
+                <li><a href="#" onclick="showFAQs()">FAQs</a></li>
+                <li><a href="#" onclick="showHRContact()">HR Contact</a></li>
             </ul>
         </li>
     </ul>

@@ -24,6 +24,7 @@
 
 .sidebar ul {
     list-style: none;
+    padding: 0; /* Ensure no default padding */
 }
 
 .sidebar ul li {
@@ -50,22 +51,41 @@
 }
 
 .dropdown {
-    display: none;
+    display: none; /* Initially hidden, toggled by JavaScript */
     margin-left: 1.5rem;
     background-color: #0041C2;
     padding: 0.5rem 0;
     border-radius: 5px;
     transition: opacity 0.2s ease;
-    opacity: 0;
+    opacity: 0; /* Will be overridden when display is toggled */
+}
+
+.dropdown.show {
+    opacity: 1; /* Ensure visibility when shown */
+}
+
+.dropdown ul {
+    list-style: none; /* Ensure no bullets for nested ul */
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown li {
+    margin-bottom: 0.5rem; /* Add spacing between items */
 }
 
 .dropdown a {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
+    color: #ddd; /* Default color for subcategory links */
+    text-decoration: none;
+    display: block; /* Ensure the link takes the full width */
+    transition: color 0.3s ease;
 }
 
 .dropdown a:hover {
     background-color: #007BFF;
+    color: #fff; /* Ensure hover color matches JavaScript */
 }
 
 .content {
@@ -76,6 +96,10 @@
     margin: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow-y: auto;
+<<<<<<< Updated upstream
+=======
+    position: relative;
+>>>>>>> Stashed changes
 }
 
 .content h2 {
@@ -87,6 +111,7 @@
     color: #6C757D;
 }
 
+/* Rest of the existing dashboard.css styles remain unchanged */
 .update-form {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -154,37 +179,140 @@
     cursor: not-allowed;
     transform: none;
 }
+<<<<<<< Updated upstream
+=======
+
+.form-group p {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #6C757D;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+button {
+    background-color: #007BFF;
+    color: #FFFFFF;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+table th {
+    background-color: #e9ecef;
+    color: #333;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 2px solid #d0d0d0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+table td {
+    border-bottom: 1px solid #e0e0e0;
+    color: #6C757D;
+    font-size: 0.9rem;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+>>>>>>> Stashed changes
 #profile-update-form {
-    display: none; /* Initially hidden */
+    display: none;
     background: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 60%;
+<<<<<<< Updated upstream
     margin: auto;
     position: relative;
     top: 20px;
 }
+=======
+    margin: 20px auto;
+}
+
+#profile-update-form h2 {
+    color: #003087;
+    margin-bottom: 1rem;
+}
+
+>>>>>>> Stashed changes
 #profile-update-form form {
     display: grid;
     gap: 10px;
 }
 #profile-update-form label {
     font-weight: bold;
+<<<<<<< Updated upstream
+=======
+    color: #003087;
+>>>>>>> Stashed changes
 }
 #profile-update-form input,
 #profile-update-form select {
     width: 100%;
+<<<<<<< Updated upstream
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+=======
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+>>>>>>> Stashed changes
 }
 #profile-update-form button {
     background-color: #007BFF;
     color: white;
+<<<<<<< Updated upstream
     padding: 10px;
     border: none;
     border-radius: 4px;
+=======
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+>>>>>>> Stashed changes
     cursor: pointer;
 }
 #profile-update-form button:hover {
@@ -194,16 +322,25 @@
 #profile-update-form .form-group.button-group {
     display: flex;
     justify-content: center;
-    gap: 10px; /* Space between buttons */
+    gap: 10px;
 }
 
 #profile-update-form .form-group.button-group button[type="submit"] {
+<<<<<<< Updated upstream
     background-color: #6C757D; /* Grey color matching your website */
     color: #FFFFFF; /* White text */
     font-size: 1.2rem; /* Larger font size for prominence */
     padding: 12px 0; /* Vertical padding for height */
     border: none;
     border-radius: 5px; /* Rounded edges */
+=======
+    background-color: #6C757D;
+    color: #FFFFFF;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+>>>>>>> Stashed changes
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     width: 100%;
@@ -211,15 +348,20 @@
 }
 
 #profile-update-form .form-group.button-group button[type="submit"]:hover {
-    background-color: #5a6268; /* Slightly darker grey on hover */
-    transform: translateY(-2px); /* Slight lift effect */
+    background-color: #5a6268;
+    transform: translateY(-2px);
 }
 
 #profile-update-form .form-group.button-group button[type="button"] {
-    background-color: #D3D3D3; /* Lighter grey for Back button */
+    background-color: #D3D3D3;
     color: #000000;
+<<<<<<< Updated upstream
     font-size: 1.2rem;
     padding: 12px 0;
+=======
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+>>>>>>> Stashed changes
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -229,7 +371,7 @@
 }
 
 #profile-update-form .form-group.button-group button[type="button"]:hover {
-    background-color: #B0B0B0; /* Slightly darker light grey on hover */
+    background-color: #B0B0B0;
     transform: translateY(-2px);
 }
 .alert {
@@ -249,4 +391,114 @@
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+<<<<<<< Updated upstream
+=======
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+    }
+    .content {
+        margin: 0;
+        border-radius: 0;
+    }
+    #profile-update-form {
+        width: 90%;
+    }
+}
+
+.table-controls {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    margin: 0 5px;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    background-color: #003087;
+    color: white;
+}
+
+/* Shared styling for exit interview forms */
+.exit-interview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.exit-interview-table thead {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.exit-interview-table th,
+.exit-interview-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    border: none;
+}
+
+.exit-interview-table th {
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 2px solid #ddd;
+}
+
+.exit-interview-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.exit-interview-table td {
+    color: #555;
+}
+
+.exit-interview-table .update-exit-interview-btn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.exit-interview-table .update-exit-interview-btn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .update-form {
+        grid-template-columns: 1fr !important;
+    }
+    form#updateExitInterviewForm {
+        grid-template-columns: 1fr !important;
+    }
+>>>>>>> Stashed changes
 }

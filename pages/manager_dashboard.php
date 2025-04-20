@@ -333,6 +333,93 @@ try {
 }
 
 
+// Handle AJAX requests for Attendance and Leave
+if (isset($_POST['action'])) {
+    header('Content-Type: application/json');
+    $response = ['success' => false];
+
+    try {
+        if ($_POST['action'] === 'fetch_leave_applications') {
+            $leave_filter = $_POST['leave_filter'] ?? 'ispending';
+            $stmt = $con->prepare("
+                SELECT 
+                    l.leave_id AS request_id, 
+                    CONCAT(u.first_name, ' ', u.last_name) AS employee_name, 
+                    l.leave_start_date, 
+                    l.leave_end_date, 
+                    l.status,
+                    l.leave_reason
+                FROM Leaves l
+                JOIN Employees e ON l.employee_id = e.employee_id
+                JOIN Users u ON e.user_id = u.user_id
+                WHERE l.status = ?  and u.role not in ('Super Admin', 'HR')
+            ");
+            $stmt->execute([$leave_filter]);
+            $response['leave_applications'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response['success'] = true;
+        } elseif ($_POST['action'] === 'fetch_attendance') {
+            $employee_id = $_POST['employee_id'] ?? '';
+            $start_date = $_POST['start_date'] ?? '';
+            $end_date = $_POST['end_date'] ?? '';
+
+            $query = "
+                SELECT 
+                    a.employee_id, 
+                    CONCAT(u.first_name, ' ', u.last_name) AS employee_name, 
+                    d.department_name, 
+                    a.check_in, 
+                    a.check_out,
+                    CASE 
+                        WHEN a.status = 'present' THEN 'Present'
+                        WHEN a.status = 'absent' THEN 'Absent'
+                        ELSE a.status
+                    END AS status
+                FROM Attendance a
+                JOIN Employees e ON a.employee_id = e.employee_id
+                JOIN Users u ON e.user_id = u.user_id
+                JOIN Department d ON e.department_id = d.department_id
+                WHERE u.role NOT IN ('Super Admin', 'HR')
+            ";
+            $params = [];
+            if ($employee_id) {
+                $query .= " AND a.employee_id = ?";
+                $params[] = $employee_id;
+            }
+            if ($start_date) {
+                $query .= " AND DATE(a.check_in) >= ?";
+                $params[] = $start_date;
+            }
+            if ($end_date) {
+                $query .= " AND DATE(a.check_out) <= ?";
+                $params[] = $end_date;
+            }
+
+            $stmt = $con->prepare($query);
+            $stmt->execute($params);
+            $response['attendance_records'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response['success'] = true;
+        } elseif ($_POST['action'] === 'reconsider_leave') {
+            $request_id = $_POST['request_id'];
+            $stmt = $con->prepare("UPDATE Leaves SET status = 'ispending' WHERE leave_id = ?");
+            $stmt->execute([$request_id]);
+            $response['success'] = true;
+            $response['message'] = "Leave application moved back to pending.";
+        } elseif ($_POST['action'] === 'update_leave_status') {
+            $request_id = $_POST['request_id'];
+            $new_status = $_POST['status'];
+            $stmt = $con->prepare("UPDATE Leaves SET status = ?, approved_by = ? WHERE leave_id = ?");
+            $stmt->execute([$new_status, $_SESSION['user_id'], $request_id]); // Assuming user_id is in session
+            $response['success'] = true;
+            $response['message'] = "Leave application status updated to " . $new_status . ".";
+        }
+    } catch (PDOException $e) {
+        $response['error'] = "Database error: " . $e->getMessage();
+    }
+
+    echo json_encode($response);
+    exit;
+}
+
 $data = fetchData($con, $manager_id);
 $employees = $data['employees'];
 $feedback = $data['feedback'];
@@ -342,6 +429,8 @@ $projects = $data['projects'];
 $tasks = $data['tasks'];
 $project_assignments = $data['project_assignments'];
 $employee_trainings = $data['employee_trainings'] ?? [];
+$attendance_records = $data['attendance_records'] ?? [];
+$leave_applications = $data['leave_applications'] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -368,7 +457,9 @@ $employee_trainings = $data['employee_trainings'] ?? [];
         </div>
         <div id="Department_content" style="display: none;"></div>
         <div id="profile-update-form" style="display: none;"></div>
-        <div id="reports-analytics" style="display: none;" class="card">
+        <div id="profile-update-form" style="display: none;"></div>
+        <div id="leave-requests-section" style="display: none;"></div>
+        <div id="attendance-section" style="display: none;">
             <h2>Reports and Analytics</h2>
             <div class="report-filter">
                 <div class="form-group">
@@ -624,6 +715,8 @@ $employee_trainings = $data['employee_trainings'] ?? [];
         const employeeTrainings = <?php echo json_encode($employee_trainings); ?>;
         const userName = "<?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Manager'); ?>";
         const managerId = <?php echo json_encode($manager_id); ?>;
+        const attendanceRecords = <?php echo json_encode($attendance_records); ?>;
+        const leaveApplications = <?php echo json_encode($leave_applications); ?>;
         console.log('Departments:', departments);
 
 

@@ -457,9 +457,9 @@ $leave_applications = $data['leave_applications'] ?? [];
         </div>
         <div id="Department_content" style="display: none;"></div>
         <div id="profile-update-form" style="display: none;"></div>
-        <div id="profile-update-form" style="display: none;"></div>
         <div id="leave-requests-section" style="display: none;"></div>
-        <div id="attendance-section" style="display: none;">
+        <div id="attendance-section" style="display: none;"></div>
+        <div id="reports-analytics" style="display: none;" class="card">
             <h2>Reports and Analytics</h2>
             <div class="report-filter">
                 <div class="form-group">
